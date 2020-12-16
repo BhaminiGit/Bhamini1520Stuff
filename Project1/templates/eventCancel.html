@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% block title %}Cancel Event{% endblock %}
+
+
+
+{% block body %}
+ 
+Are you sure you want to cancel : {{ eventThing }} ?
+  <br>
+ <a href="{{ url_for('user_Home') }}"> NO </a> 
+ 
+  <br>
+ 
+ <a href="{{url_for('cancelEvent_sure' ,event_title = eventThing.title) }}"> YES </a>	
+
+{% endblock %}
+

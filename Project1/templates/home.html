@@ -1,0 +1,88 @@
+{% extends "layout.html" %} 
+
+{% block title %}Home{% endblock %}
+
+{% block body %}
+ 
+
+	<h2>All Events</h2>
+
+	<ul class = "alleventBoxes">
+	    {% for event in alleventList %}
+	   
+		  <li>      <br>
+				    Title:			{{event.title }}
+				    <br>
+				    Description:	{{event.description}}
+				    <br>
+				    Start:  		{{event.startTime}}
+				    <br>
+				    End:   			{{event.endTime}}
+				    <br>
+				    Host:   		{{event.host}}
+				    <br>
+		    {% if g.user %}
+		    	{% if g.user.user_id  !=  event.host %}
+
+		    		<a href="{{url_for('attendEvent' ,event_title = event.title) }}"> Attend Event </a>
+				
+				{% endif %}
+			{% endif %}
+
+
+
+
+	    {% else %}
+
+	    <li><h5>NO EVENTS AT ALL</h5>s
+	  {% endfor %}
+	</ul>
+
+
+
+	{%if g.user %}
+		{%if request.endpoint == 'user_Home'%}
+
+			<h2>Your Events:</h2>
+
+			<ul class = "usereventBoxes">
+
+		  	{% for event in usereventList %}
+		   
+			 <li>   <br>
+				    Title:			{{event.title }}
+				    <br>
+				    Description:	{{event.description}}
+				    <br>
+				    Start:  		{{event.startTime}}
+				    <br>
+				    End:   			{{event.endTime}}
+				    <br>
+				    Host:   		{{event.host}}
+				    <br>
+				    
+			 		<a href="{{url_for('cancelEvent' ,event_title = event.title) }}"> Cancel Event </a>			    	
+			</li>
+
+
+		   	{%else%}
+
+		    	<li><h5> YOU DON'T HOST ANY EVENTS.</h5>
+
+		  	{% endfor %}
+		</ul>
+
+			
+		{%endif%}
+	{%else%}
+	Log in to see the events you host 
+	{%endif%}
+
+
+{% endblock %}
+
+<!-- 
+
+ <br>
+	    <a href="{{url_for('cancelEvent')}}">Cancel Event </a>
+	    <br> -->

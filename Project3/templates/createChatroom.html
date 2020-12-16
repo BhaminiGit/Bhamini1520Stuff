@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+{% block title %}Create New Room{% endblock %}
+
+{% block javascript %}{% endblock %}
+
+
+{% block body %}
+
+	<h2> Create New Chat Room </h2>
+
+
+
+	 <form action="" method="post"> 
+  
+  
+		<div class = "createNew">
+
+			
+			Please enter the name of the chatroom
+			<input type = "text" name = "roomName" size = "30" value = "{{request.form.roomName}}">
+			<input type = "submit" name = "newRoomButton" value = "Create" >
+		
+
+		</div>
+		
+	
+  
+	</form>
+{% endblock %}

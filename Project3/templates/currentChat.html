@@ -1,0 +1,164 @@
+
+
+
+{% extends "layout.html" %}
+
+
+
+{% block title %} {{roomName}} {% endblock %}
+
+
+{% block javascript %}
+
+
+<script type="text/javascript">
+
+	var timeoutID;
+	var timeout = 1000;
+
+	function setup() {
+		document.getElementById("theButton").addEventListener("click", makePost, true);
+
+		timeoutID = window.setTimeout(poller, timeout);
+	}
+
+	function makePost() {
+		var httpRequest = new XMLHttpRequest();
+
+		if (!httpRequest) {
+			alert('Giving up :( Cannot create an XMLHTTP instance');
+			return false;
+		}
+
+		var one = document.getElementById("a").value;
+		var from = document.getElementById("currentUserLable").textContent;
+		
+		var row = [one + " - " + from]
+		httpRequest.onreadystatechange = function() { handlePost(httpRequest, row) };
+
+
+		var rowNum = document.getElementById("roomNumber").textContent;
+		
+
+
+		httpRequest.open("POST", "/new_item");
+		httpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+		var data;
+		data = "one=" + one + " - " + from + "&num=" + rowNum ;
+		
+		httpRequest.send(data);
+	}
+
+	function handlePost(httpRequest, row) {
+		if (httpRequest.readyState === XMLHttpRequest.DONE) {
+			if (httpRequest.status === 200) {
+				addRow(row);
+				clearInput();
+			} else {
+				alert("There was a problem with the post request.");
+			}
+		}
+	}
+
+	function poller() {
+		var httpRequest = new XMLHttpRequest();
+
+		if (!httpRequest) {
+			alert('Giving up :( Cannot create an XMLHTTP instance');
+			return false;
+		}
+
+		httpRequest.onreadystatechange = function() { handlePoll(httpRequest) };
+		httpRequest.open("GET", "/messages");
+		httpRequest.send();
+	}
+
+	function handlePoll(httpRequest) {
+		if (httpRequest.readyState === XMLHttpRequest.DONE) {
+			if (httpRequest.status === 200) {
+				var tab = document.getElementById("msgList");
+				while (tab.childNodes.length > 0) {
+
+					tab.removeChild(tab.childNodes[0]);
+				}
+				
+				var rows = JSON.parse(httpRequest.responseText);
+
+				var rowNum = parseInt(document.getElementById("roomNumber").textContent);
+
+				addRow(rows[rowNum]);
+				// for (var i = 0; i < rows.length; i++) {
+				// 	addRow(rows[i]);
+				// }
+				
+				timeoutID = window.setTimeout(poller, timeout);
+				
+			} else {
+				alert("There was a problem with the poll request.  you'll need to refresh the page to recieve updates again!");
+			}
+		}
+	}
+
+	function clearInput() {
+		document.getElementById("a").value = "";
+		
+	}
+
+	function addRow(row) {
+		var myList = document.getElementById("msgList");
+		
+		for (var i = 0; i < row.length; i++) {
+			var item = row[i];
+			var li = document.createElement('li');
+			li.appendChild(document.createTextNode(item));
+			myList.appendChild(li);
+		}
+	}
+
+	window.addEventListener("load", setup, true);
+		
+
+</script>
+
+{% endblock %}
+
+{% block body %}
+
+<h2>{{ roomName }} </h2>
+
+<p> <a href="{{url_for('leaveRoom')}}"> LEAVE ROOM </a>  </p>
+
+<p id="roomNumber" style="display: none"> {{ roomNum }} </p>
+
+<div id = "messageHistory" style=" width: 480px; height: 400px;  border:3px; border-style:solid; border-color:#88a513; padding: 1em; background-color: #ebe2c8; overflow-y: auto; display: inline-block;" >	
+
+	<ul id="msgList">
+		{% for i in items[roomNum] %}
+
+		<li> {{ i }} </li>
+
+		{% else %}
+
+		<li> loading... </li>
+
+		{% endfor %}
+	</ul>
+		
+
+			
+
+
+</div>
+		
+		<form name="theForm">
+			<input type="text" id="a" name="a" value="" style="width: 480px; height: 50px; " />
+			
+			<input type="button" id="theButton" value="enter" style="width: 480px; " />
+		</form>
+
+
+
+
+{% endblock %}
+

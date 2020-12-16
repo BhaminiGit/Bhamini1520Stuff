@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+{% block title %}CHAT ROOMS{% endblock %}
+
+{% block javascript %}{% endblock %}
+
+
+{% block body %}
+
+	<h2>Chat rooms </h2>
+
+
+	{% if error %}<div class="error"><strong>Error:</strong> {{ error }}</div>{% endif %}
+
+	<form >
+
+		<input type="hidden" name="roomName" id="roomName" value= '{{ room }}' >
+
+			
+		<div class = "chatrooms">
+			
+
+
+		
+		<table>
+  		{% for i in range(chatrooms|length) %}
+
+  			<tr><a href="{{url_for('currentChatFunc',roomName = chatrooms[i] , roomNum = i )}}">{{ i }} {{ chatrooms[i]  }} </a></tr>	
+  			<br>	
+		
+  		{% else %}
+
+  			<tr>no rooms</tr>
+  			<br>
+
+		{% endfor %}
+
+			<tr><a href="{{url_for('createRoom')}}">Create a New Room </a></tr>
+			<br>
+
+			
+
+		</table>
+
+		</div>
+
+  
+	</form>
+{% endblock %}

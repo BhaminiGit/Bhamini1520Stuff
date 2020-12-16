@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% block title %}Creating an Event{% endblock %}
+
+
+{% block body %}
+  <h2>Create and Event</h2>
+  {% if error %}<div class="error"><strong>Error:</strong> {{ error }}</div>{% endif %}
+  <form action="" method="post">
+    <dl>
+
+      <dt>What is the tile of the event?
+      <dd><input type="text" name="eventTitle" size="20" value="{{ request.form.eventTitle }}">
+
+      <dt>Give a description of the event.
+      <dd><input type="text" name="eventDes" size="60" value="{{ request.form.eventDes }}">
+
+      <dt>Give the start date and the time
+      <dd><input type = "datetime-local" name="startDT" value="{{ request.form.startDT }}">
+
+      <dt>Give the end date and the time
+      <dd><input type = "datetime-local" name="endDT" value="{{ request.form.endDT }}">
+
+   
+    </dl>
+    <div class="actions"><input type="submit" value="Host Event"></div>
+  </form>
+{% endblock %}

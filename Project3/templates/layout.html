@@ -1,0 +1,124 @@
+<!doctype html>
+<title>{% block title %}LAYOUT{% endblock %} | CHAT ROOM</title>
+
+
+
+
+<style type="text/css">
+
+	body{
+
+		background-color: #f3ea80;
+		margin:0 auto;
+		max-width: 800px; 
+		text-align: center;
+
+	}
+	h1{
+		
+		border: 4px solid #ca1dec;
+		color: #ca1dec;
+		background-color: #ebe2c8;
+		height: 58px;
+		width: 238px;
+		text-align: center;	
+		display: inline-block;	
+
+	}
+	h2{
+
+		color: #521e47;
+		text-align: center;
+		display: block;
+	}
+
+	div.middle{
+		background-color: #d4ee6c;
+		border-color: #183306;
+		width: 700px;
+		height: 800px;
+		text-align: center;
+		display: inline-block;
+
+	}
+
+	div.loginClass{
+
+		background-color: #d9aade;
+		width:300px;
+		height:300px;
+		text-align: center;
+		display: inline-block;
+	}
+
+	div.signupClass{
+		background-color: #d9aade;
+		width:300px;
+		height:300px;
+		text-align: center;
+		display: inline-block;
+
+	}
+	div.ChatBox{
+		text-align: center;
+		margin:0 auto;
+		display: inline-block;
+	}
+
+	div.chatrooms {
+		border: 3px solid black;
+		background-color: white;
+		width: 600px;
+		display: inline-block;
+	}
+
+	table,tr{
+		border-width: 2px;
+		border-color: #521e47;
+		background-color: #d9aade;
+		border-spacing: 5px;
+		border-collapse: separate;
+
+	}
+
+</style>
+
+{% block javascript %}{% endblock %}
+
+
+<div class="page">
+
+	<h1>CHAT ROOM</h1>
+
+
+
+	<div class="body">
+		<div class = "middle"> 
+
+			{% block body %}{% endblock %}
+
+
+			<div class="footer"> 
+
+				{%if request.endpoint != 'loginfunc'%}
+					<a href="{{url_for('logout', username = currentUser)}}"> logout </a>
+					<br>
+				{% endif %}
+
+				<p id="currentUserLable">  {{ currentUser }}</p>
+
+				<a href="{{url_for('homeButtons') }}"> add user </a>
+				<br>
+				Click on a user to switch users!
+				{% for u in userList %}
+					<a href="{{url_for('switchUsers',username = u ) }} "> {{ u }}    </a>
+				{% else %}
+					none
+				{% endfor %}
+			
+			</div>
+		</div>
+
+	</div>
+
+	

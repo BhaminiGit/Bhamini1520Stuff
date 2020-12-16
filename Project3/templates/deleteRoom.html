@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+{% block title %}Delete Room {% endblock %}
+
+{% block javascript %}{% endblock %}
+
+
+{% block body %}
+
+	<h2> Delete a chat room </h2>
+
+
+
+
+
+	{% for %}
+
+  			<tr><a href="{{url_for('currentChatFunc',roomName = chatrooms[i] , roomNum = i )}}">{{ i }} {{ chatrooms[i]  }} </a></tr>	
+  			<br>	
+		
+  		{% else %}
+
+  			<tr>no rooms</tr>
+  			<br>
+
+		{% endfor %}
+
+	
+{% endblock %}
