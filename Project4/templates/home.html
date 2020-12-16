@@ -1,0 +1,327 @@
+﻿{% extends "layout.html" %}
+
+
+{% block title %}HOME{% endblock %}
+
+{% block javascript %}
+
+<script type="text/javascript" >
+    
+    var timeoutID;
+    var timeout = 10000;
+
+
+    function setup() {
+        document.getElementById("addCateg").addEventListener("click", sendCateg, true);
+
+        document.getElementById("addPur").addEventListener("click", sendPurchase, true);
+
+        // initialize theTable
+        categorypoller();
+        purchasepoller();
+    }
+
+
+    /*********************************************************
+     * AJAX boilerplate
+     ***********************************************************/
+
+    function makeRec(method, target, retCode, handlerAction, data) {
+        console.log("make Rec")
+        var httpRequest = new XMLHttpRequest();
+
+        if (!httpRequest) {
+            alert('Giving up :( Cannot create an XMLHTTP instance');
+            return false;
+        }
+
+        httpRequest.onreadystatechange = makeHandler(httpRequest, retCode, handlerAction);
+        httpRequest.open(method, target);
+
+        if (data) {
+            httpRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            httpRequest.send(data);
+        }
+        else {
+            httpRequest.send();
+        }
+    }
+
+
+    function makeHandler(httpRequest, retCode, action) {
+        console.log("making handler!");
+        function handler() {
+            if (httpRequest.readyState === XMLHttpRequest.DONE) {
+                console.log("httpRequest status" + httpRequest.status);
+                console.log("retcode" + retCode);
+                if (httpRequest.status === retCode) {
+                    console.log("recieved response text:  " + httpRequest.responseText);
+                    action(httpRequest.responseText);
+                } else {
+                    alert("There was a problem with the request.  you'll need to refresh the page!");
+                }
+            }
+        }
+        return handler;
+    }
+
+    /*******************************************************
+     * actual client-side app logic
+     *******************************************************/
+
+    function categorypoller() {
+        console.log(" makeRec(GET, /cars, 200, repopulate); ")
+        makeRec("GET", "/cats", 200, repopulateCategory);
+    }
+
+
+    function sendCateg() {
+       // window.clearTimeout(timeoutID);
+      
+
+        var name = document.getElementById("categName").value
+        var limit = document.getElementById("categLimit").value;
+        var data;
+
+
+        data = "name=" + name + "&limit=" + limit;
+
+        var catDrop = document.getElementById("catDrop");
+        var option = document.createElement("option");
+        option.value = name;
+        option.text = name;
+        catDrop.add(option);
+
+        console.log('makeRec("POST", "/cats", 201, categorypoller, data);')
+
+        makeRec("POST", "/cats", 201, categorypoller, data);
+
+        document.getElementById("categName").value = "";
+        document.getElementById("categLimit").value = "";
+       
+    }
+
+
+    function purchasepoller() {
+        console.log(" makeRec(GET, /purchases, 200, repopulate); ")
+        makeRec("GET", "/purchases", 200, repopulatePurchase);
+    }
+
+
+    function sendPurchase() {
+       // window.clearTimeout(timeoutID);
+        
+        var amountSpent = document.getElementById("amountSpent").value;
+        var itemPur = document.getElementById("itemPur").value;
+        var dateSpent = document.getElementById("dateSpent").value;
+        //var categ = document.getElementById("categ").value;
+
+        var MYCATEG = document.getElementById("catDrop").value;
+       // alert(MYCATEG);
+
+        var data;
+        data = "aSpent=" + amountSpent + "&item=" + itemPur + "&date=" + dateSpent + "&category=" + MYCATEG;
+        console.log('makeRec("POST", "/cats", 201, categorypoller, data);')
+
+        makeRec("POST", "/purchases", 201, purchasepoller, data);
+
+        document.getElementById("amountSpent").value = "";
+        document.getElementById("itemPur").value = "";
+        document.getElementById("dateSpent").value = "";
+       
+    }
+
+    function deleteTodo(categoryId) {
+        makeRec("DELETE", "/cats/" + categoryId , 204, categorypoller);
+
+        var select=document.getElementById('catDrop');
+
+        for (i=0;i<select.length;  i++) {
+           if (select.options[i].value == categoryId) {
+             select.remove(i);
+             break;
+           }
+        }
+
+        purchasepoller();
+    }
+
+    // helper function for repop:
+
+    function repopulateCategory(responseText) {
+        console.log("repopulating!");
+
+        var cats = JSON.parse(responseText);
+
+        
+        var tab = document.getElementById("categoryList");
+                        
+        while (tab.childNodes.length > 0) {
+
+            tab.removeChild(tab.childNodes[0]);
+        }
+        for(c in cats)
+        {   
+            var t = c;
+            var user_limit = cats[c];
+            var user, limit, status;
+            user = user_limit[0];
+            limit = user_limit[1];
+            status = user_limit[2];
+            var currentUser = document.getElementById("currentUser").innerHTML;
+
+
+            if(currentUser === user)
+            {
+                var li = document.createElement('li');
+                li.appendChild(document.createTextNode(t  + " --> Limit: $" + limit + " Status: $" + status));
+                var but = document.createElement("input");
+                but.type = "button";
+                but.value = "delete " + t;
+                    
+                (function(_t){but.addEventListener("click", function() {deleteTodo(_t); }); })(t);
+                li.appendChild(but);
+              //  alert(status + " " + limit);
+                if(status > limit){
+                    li.appendChild(document.createTextNode("overspent"));
+                }
+            }
+                tab.appendChild(li);
+
+        }
+
+        //timeoutID = window.setTimeout(poller, timeout);
+    }
+
+    function repopulatePurchase(responseText) {
+        console.log("repopulating!");
+        var purchases = JSON.parse(responseText);
+        console.log(purchases);
+        
+        var uncat = 0;
+        // var tab = document.getElementById("purchaseList");
+                        
+        // while (tab.childNodes.length > 0) {
+
+        //     tab.removeChild(tab.childNodes[0]);
+        // }
+
+        for(p in purchases)
+        {   
+            var thePurchase = p;
+            var details = purchases[p];
+            var user,price,item,date, leCategory
+            user = details[0];
+            amount = details[1];
+            item = details[2];
+            date = details[3];
+            leCategory = details[4];
+            if(leCategory == "uncategorized"){
+                uncat = uncat + amount;
+            }
+            // var li = document.createElement('li');
+            // li.appendChild(document.createTextNode(item + "   " + amount + "   " + leCategory ));
+            // tab.appendChild(li);
+        }
+
+        document.getElementById("uncategorized").innerText ="uncategorized total: " + uncat + "";
+
+        makeRec("GET", "/cats", 200, repopulateCategory); 
+        //timeoutID = window.setTimeout(poller, timeout);
+    }
+
+    // setup load event
+    window.addEventListener("load", setup, true);
+
+    
+</script>
+
+{% endblock %}
+
+ {% block body %}
+ <h1>HOME</h1>
+    {% if error %}<div class="error"><strong>Error:</strong> {{ error }}</div>{% endif %}
+    {% if g.user %}
+
+            
+        <p id = "currentUser" >{{ g.user.username }}</p> 
+        
+        CURRENT MONTH
+        <br />        
+
+    <div class="cList">
+       <h2>LIST OF CATEGORIES</h2> 
+
+        <ul id="categoryList">
+        </ul>
+        
+        <p id = "uncategorized"> Stuff </p>
+
+         <br />
+    <br />
+    </div>
+    <br/>
+    <br>
+<div class="addPurchase">
+    <h2>ADD A NEW PURCHASE</h2>
+    <br />
+    Amount:
+    <input type="number" id="amountSpent" name="amountSpent" value="{{ request.form.amountSpent }}" />
+    <br />
+     Item:
+    <input type="text" id="itemPur" name="itemPur" value="{{ request.form.itemPur }}" />
+    <br />
+    Date:
+    <input type="date" id="dateSpent" name="dateSpent" value="{{ request.form.dateSpent }}" />
+    <br />
+    Category:
+    <select id = "catDrop">
+        {% for theCategory in myLIST %}
+
+        <option value="{{ theCategory.name }}">{{ theCategory.name }}</option>
+
+        {% else %}
+        <br /> 
+        NOTHING
+        {% endfor %}
+
+    </select>
+
+    <br />
+    <input type="button" id="addPur" name="addPur" value="ADD PURCHASE" />
+
+     <br />
+    <br />
+</div>
+
+    <br />
+    <br />
+<div class="addCategory">
+    <h2>ADD A NEW CATEGORY</h2>
+    <br/>
+    Category Name:
+    <input type="text" id="categName" name="categName" value="{{ request.form.categName }}" />
+    <br />
+    Category Limit
+
+    <input type="number" id="categLimit" name="categLimit" value="{{ request.form.categLimit }}" />   
+
+    <br />
+    <input type="button" id="addCateg" name="addCateg" value="ADD CATEGORY" />
+
+ <br />
+    <br />
+</div>
+
+    {% else %}
+    <div class="homeButtons">
+        <form action="" method="post">
+            <input type="submit" id="signup_btn" name="signup_btn" value="SIGN UP" />
+            <input type="submit" id="login_btn" name="login_btn" value="LOG IN" />
+        </form>
+    
+ <br />
+    <br />
+    </div>
+    {% endif %}
+{% endblock %}

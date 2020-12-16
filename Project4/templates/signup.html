@@ -1,0 +1,36 @@
+﻿{% extends "layout.html" %}
+
+
+{% block title %}SIGN UP{% endblock %}
+
+{% block javascript %} {% endblock %}
+
+ {% block body %}
+
+<h1>Sign Up</h1>
+
+  	{% if error %}<div class="error"><strong>Error:</strong> {{ error }}</div>{% endif %}
+
+<div class="signupClass">
+    <form action="" method="post">
+
+
+        Enter a username:
+        <input type="text" name="username" size="30" value="{{ request.form.username }}">
+        <br>
+        Enter a password:
+        <input type="text" name="password" size="30" value="{{ request.form.password }}">
+
+
+        <div class="login_signup_buttons">
+
+            <input type="submit" name="signupsignup" value="SIGN UP" style="background-color: #f2eeae; color: black; width: 70px;">
+
+        </div>
+
+
+    </form>
+</div>
+
+
+{% endblock %}

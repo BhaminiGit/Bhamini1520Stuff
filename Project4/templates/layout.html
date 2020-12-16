@@ -1,0 +1,93 @@
+﻿<!doctype html>
+<title>{% block title %}Welcome{% endblock %} | BUDGET LOG</title>
+
+<style type="text/css">
+	
+	body{
+
+		background-color: #6fc5ca;
+		margin:0 auto;
+		max-width: 900px; 
+		text-align: center;
+
+	}
+
+	h1{
+		
+		border: 4px solid #black;
+		color: black;
+		background-color: #bb95b7;
+		height: 58px;
+		width: 238px;
+		text-align: center;	
+		display: inline-block;	
+		font-size: 50px;
+
+	}
+	h2{
+
+		border: 4px solid #black;
+		color: black;
+		background-color: #bb95b7;
+		font-size: 30px;
+		text-align: center;	
+		display: inline-block;	
+	}
+
+
+	div.page{
+		background-color: #fcc1ae;
+		border-color: #f2eeae;
+		width: 700px;
+		min-height: 600px;
+		text-align: center;
+		display: inline-block;
+
+	}
+
+	div.loginClass,div.signupClass,div.homeButtons{
+
+		background-color: #e4a4b0;
+		border: 4px solid #f2eeae;
+		width:300px;
+		height:300px;
+		text-align: center;
+		display: inline-block;
+	}
+
+
+	div.cList,div.addPurchase,div.addCategory{
+
+		background-color: #e4a4b0;
+		border: 4px solid #f2eeae;
+		width:500px;
+		text-align: center;
+		display: inline-block;
+
+	}
+
+	
+
+</style>
+
+{% block javascript %} {% endblock %}
+
+<div class="page">
+
+     <p>
+
+   <!--  #bb95b7 -> purple color
+	#e4a4b0 -> pinky color
+	#fcc1ae -> orangey color 
+	#f2eeae -> yellowy color
+	#6fc5ca -> cyany color -->
+
+    </p>
+
+    <div class="body">
+        {% block body %}{% endblock %}
+    </div>
+    <div class="footer">
+        <a href="{{url_for('logout')}}"> logout </a>
+    </div>
+</div>
